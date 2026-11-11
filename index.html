@@ -191,7 +191,7 @@
   <div class="panel tint-blue">
     <h2 id="chartTitle">CB Target vs CB Actual by Week</h2>
     <div class="chart-box" style="height:460px;"><canvas id="mainChart"></canvas></div>
-    <div id="mainLeadPanel" class="chart-box" style="height:150px;margin-top:6px;"><canvas id="mainChartLead"></canvas></div>
+    <div id="mainLeadPanel" class="chart-box" style="height:175px;margin-top:6px;"><canvas id="mainChartLead"></canvas></div>
   </div>
 
   <div class="panel tint-sky">
@@ -223,7 +223,7 @@
     <h2>CB Actual</h2>
     <div class="hint">Compares the CB Actual trend across all markets for the selected weeks, with an MA5 (5-week moving average) line for Group CB Actual.</div>
     <div class="chart-box" style="height:480px;"><canvas id="allGeoChart"></canvas></div>
-    <div class="chart-box" style="height:150px;margin-top:6px;"><canvas id="allGeoChartLead"></canvas></div>
+    <div class="chart-box" style="height:175px;margin-top:6px;"><canvas id="allGeoChartLead"></canvas></div>
     <div style="margin-top:14px;text-align:right;"><button type="button" id="toggleGeoMa5" class="ma5-btn">Show MA5 by GEO</button><div id="ma5Chips" style="display:none;margin-top:8px;"></div></div>
     <div style="overflow-x:auto;margin-top:8px;">
       <table id="allGeoTable">
@@ -351,6 +351,13 @@ SUB_ORDER.forEach(key=>{
   tabsEl.appendChild(b);
 });
 
+
+// Week label with date range (week 1 starts Sun 4 Jan 2026, per CB_Monthly helper)
+function weekLabel(w){
+  const p=n=>String(n).padStart(2,'0');
+  const s=new Date(2026,0,4+7*(w-1)), e=new Date(2026,0,4+7*(w-1)+6);
+  return ['W'+w, `${p(s.getDate())}/${p(s.getMonth()+1)}–${p(e.getDate())}/${p(e.getMonth()+1)}`];
+}
 let mainChart, geoChart, allGeoChart, mainLeadChart, allGeoLeadChart, ebitdaChart;
 let ma5Panel = false;
 let selectedMa5 = new Set();
@@ -405,7 +412,7 @@ function splitWeeklyTotal(arr){
 }
 
 function renderMainChart(rows, key){
-  const labels = [...rows.map(r=>r[1]), 'Total'];
+  const labels = [...rows.map(r=>weekLabel(r[0])), 'Total'];
   const target = [...rows.map(r=>r[2]), rows.reduce((s,r)=>s+(r[2]||0),0)];
   const actual = [...rows.map(r=>r[3]), rows.reduce((s,r)=>s+r[3],0)];
   const pctData = [...rows.map(r=>r[4]*100), null];
@@ -629,7 +636,7 @@ function renderGeoChart(){
 }
 
 function renderAllGeoChart(){
-  const labels = [...DATA['GROUP'].slice(currentStart-1, currentEnd).map(r=>r[1]), 'Total'];
+  const labels = [...DATA['GROUP'].slice(currentStart-1, currentEnd).map(r=>weekLabel(r[0])), 'Total'];
 
   const datasets = [];
 
@@ -899,7 +906,7 @@ function renderEbitdaChart(rows, key){
   }
   if(panel) panel.style.display = '';
 
-  const labels = [...rows.map(r=>r[1]), 'Total'];
+  const labels = [...rows.map(r=>weekLabel(r[0])), 'Total'];
   const crSeries = DATA[key+'_CR'] || [];
   const cbActual = rows.map(r=>(crSeries[r[0]-1] ?? 0)); // CR = Cash in - MKT*1.22
   const cbActualTotal = cbActual.reduce((s,v)=>s+v,0);
