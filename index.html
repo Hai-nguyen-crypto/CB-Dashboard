@@ -352,10 +352,10 @@ SUB_ORDER.forEach(key=>{
 });
 
 
-// Week label with date range (week 1 starts Sun 4 Jan 2026, per CB_Monthly helper)
+// Week label with date range, Monday to Sunday. The week-header date in CB_Act (Sun 4 Jan 2026 for W1) is the Sunday that ends the week.
 function weekLabel(w){
   const p=n=>String(n).padStart(2,'0');
-  const s=new Date(2026,0,4+7*(w-1)), e=new Date(2026,0,4+7*(w-1)+6);
+  const e=new Date(2026,0,4+7*(w-1)), s=new Date(2026,0,4+7*(w-1)-6);
   return ['W'+w, `${p(s.getDate())}/${p(s.getMonth()+1)}–${p(e.getDate())}/${p(e.getMonth()+1)}`];
 }
 let mainChart, geoChart, allGeoChart, mainLeadChart, allGeoLeadChart, ebitdaChart;
